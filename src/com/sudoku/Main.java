@@ -13,14 +13,14 @@ public class Main {
     public static void test() {
         //Board board1 = new Board(9, 9);
         //test(board1);
-        Board board2 = new Board(9);
+        Board board = new Board(9);
         //board2.printBoard();
-        board2.readFromFile("inputs/board2.csv");
-        board2.printBoard();
+        board.readFromFile("inputs/board9.csv");
+        //board.printBoard();
         // purposefully create an invalid board
-        board2.cells.elementAt(0).elementAt(0).setNum(5);
-        board2.printBoard();
-        System.out.println(board2.checkBoard(true));
+        //board.cells.elementAt(0).elementAt(0).setNum(3);
+        board.printBoard();
+        System.out.println(board.checkBoard(false));
 
 
     }

@@ -43,19 +43,19 @@ public class Cell {
             }
             return true;
         }
-        if (this.board.checkNum("box", this.box, this.num, false) > 1) {
+        if (this.board.checkNum("box", this.box, this.num, false, debug) > 1) {
             if (debug) {
                 System.out.println("multiple found in box");
             }
             return false;
         }
-        if (this.board.checkNum("row", this.row, this.num, false) > 1) {
+        if (this.board.checkNum("row", this.row, this.num, false, debug) > 1) {
             if (debug) {
                 System.out.println("multiple found in row");
             }
             return false;
         }
-        if (this.board.checkNum("col", this.col, this.num, false) > 1) {
+        if (this.board.checkNum("col", this.col, this.num, false, debug) > 1) {
             if (debug) {
                 System.out.println("multiple found in col");
             }

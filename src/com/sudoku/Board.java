@@ -29,17 +29,22 @@ public class Board {
 
     // input: checkType ("box", "row", or "col"), x (corresponding number of box/row/col), num (number to check for), update (should remove from potentials?)
     // output: number of instances of num found
-    public int checkNum(String checkType, int x, int num, boolean update) {
+    public int checkNum(String checkType, int x, int num, boolean update, boolean debug) {
         int i;
         int j;
         int total = 0;
-        for (i = 0; i < boardSize; i++) {
-            for (j = 0; j < cells.size(); j++) {
+        for (i = 0; i < cells.size(); i++) {
+            for (j = 0; j < cells.elementAt(i).size(); j++) {
                 if (checkType == "box") {
                     if (cells.elementAt(i).elementAt(j).box == x) {
-                        if (cells.elementAt(i).elementAt(j).potentials.contains(num)) {
+                        if (debug) {
+                            System.out.printf("%s %d %d, %d %d, %d\n", checkType, x, num, i, j, total);
+                        }
+                        if (cells.elementAt(i).elementAt(j).num == num) {
                             total++;
-                            if (update) {
+                        }
+                        if (update) {
+                            if (cells.elementAt(i).elementAt(j).potentials.contains(num)) {
                                 cells.elementAt(i).elementAt(j).potentials.remove(num);
                             }
                         }
@@ -47,26 +52,37 @@ public class Board {
                 }
                 if (checkType == "row") {
                     if (cells.elementAt(i).elementAt(j).row == x) {
-                        if (cells.elementAt(i).elementAt(j).potentials.contains(num)) {
+                        if (debug) {
+                            System.out.printf("%s %d %d, %d %d, %d\n", checkType, x, num, i, j, total);
+                        }
+                        if (cells.elementAt(i).elementAt(j).num == num) {
                             total++;
                         }
                         if (update) {
-                            cells.elementAt(i).elementAt(j).potentials.remove(num);
+                            if (cells.elementAt(i).elementAt(j).potentials.contains(num)) {
+                                cells.elementAt(i).elementAt(j).potentials.remove(num);
+                            }
                         }
                     }
                 }
                 if (checkType == "col") {
                     if (cells.elementAt(i).elementAt(j).col == x) {
-                        if (cells.elementAt(i).elementAt(j).potentials.contains(num)) {
+                        if (debug) {
+                            System.out.printf("%s %d %d, %d %d, %d\n", checkType, x, num, i, j, total);
+                        }
+                        if (cells.elementAt(i).elementAt(j).num == num) {
                             total++;
                         }
                         if (update) {
-                            cells.elementAt(i).elementAt(j).potentials.remove(num);
+                            if (cells.elementAt(i).elementAt(j).potentials.contains(num)) {
+                                cells.elementAt(i).elementAt(j).potentials.remove(num);
+                            }
                         }
                     }
                 }
             }
         }
+
         return total;
     }
 
@@ -138,7 +154,7 @@ public class Board {
     public boolean checkBoard(boolean debug) {
         int i;
         int j;
-        if(debug) {
+        if (debug) {
             System.out.println("valid numbers: " + this.valid_nums.toString());
         }
 
@@ -148,6 +164,10 @@ public class Board {
             for (j = 0; j < this.boardSize; j++) {
                 if (!this.cells.elementAt(i).elementAt(j).checkCell(debug)) {
                     validBoard = false;
+                    // if error found and no need to print out every cell check, immediately return false
+                    if (!debug && !validBoard) {
+                        return validBoard;
+                    }
                 }
             }
         }
@@ -158,16 +178,19 @@ public class Board {
     // prints out the board in a nice format with separate boxes
     // TODO: make horizontal box borders dynamic based on board size
     public void printBoard() {
+        String temp = new String(new char[boardSize * 2 + squaresPer * 2 + 1]).replace("\0", "-");
+        System.out.printf("%s\n", temp);
         for (int i = 0; i < boardSize; i++) {
+            System.out.printf("| ");
             for (int j = 0; j < boardSize; j++) {
-                System.out.printf("%d", this.cells.elementAt(i).elementAt(j).num);
-                if ((j + 1) % this.squaresPer == 0) {
-                    System.out.printf(" | ");
+                System.out.printf("%d ", this.cells.elementAt(i).elementAt(j).num);
+                if ((j + 1) % this.squaresPer == 0 && (j + 1) != this.boardSize) {
+                    System.out.printf("| ");
                 }
             }
-            System.out.println();
+            System.out.println("|");
             if ((i + 1) % this.squaresPer == 0) {
-                System.out.printf("------------------------------------------\n");
+                System.out.printf("%s\n", temp);
             }
         }
     }
