@@ -2,7 +2,7 @@
 
 STILL A WIP!
 
-Done just for fun/learning, there are more efficient solutions out there (though I didn't look through the exact code as I wanted to start this from scratch without any preconceived notions of the best way to do it)
+Done just for fun/learning, there are more efficient solutions out there (though I didn't look through their exact code as I wanted to start this from scratch without any preconceived notions of the best way to do it)
 
 A Java program to read in unsolved Sudoku puzzles of any square board size (i.e. 4, 9, 16...) and solve it using brute-force techniques.
 
