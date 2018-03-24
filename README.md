@@ -6,7 +6,7 @@ Done just for fun/learning, there are more efficient solutions out there (though
 
 A Java program to read in unsolved Sudoku puzzles of any square board size (i.e. 4, 9, 16...) and solve it using brute-force techniques.
 
-Reads in unsolved boards (or solved, with the ability to check for validity) as CSV files and prints out the completed board.
+Reads in unsolved boards (or solved, with the ability to check for validity) as CSV files and prints out the completed board.  Unsolved cells should be initially set to 0
 
 Basic algorithm adds the "potential" numbers to every non-solved cell at the beginning of the runtime, then continues iterating through the board to check for any of the following conditions to satisfy a solution to each cell:
   - If it is the only potential for that cell, it must be the only solution
