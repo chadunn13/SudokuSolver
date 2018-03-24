@@ -16,7 +16,7 @@ Basic algorithm adds the "potential" numbers to every non-solved cell at the beg
 Once a cell is solved, the "potentials" of each other cell in that row, column, or box are updated to remove that solved number, and the iteration continues with this new knowledge until every cell is solved, then does one final check for validity on the entire board.
 
 
-Future plans (after finalizing the algorithm above:
+Future plans (after finalizing the algorithm above):
   - better UI
   - optimizing the solving algorithm
   - extension to non-square even board sizes (8, 10, 12, etc)
