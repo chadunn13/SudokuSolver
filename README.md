@@ -19,5 +19,5 @@ Once a cell is solved, the "potentials" of each other cell in that row, column, 
 Future plans (after finalizing the algorithm above:
   - better UI
   - optimizing the solving algorithm
-  - extension to non-square board sizes (8, 10, 12, etc)
+  - extension to non-square even board sizes (8, 10, 12, etc)
   
