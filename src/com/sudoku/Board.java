@@ -6,20 +6,25 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class Board {
+    // length of board side
     private int boardSize;
+    // length of each box side
     private int squaresPer;
+
+    // vector of row vectors, called with cells[row_num][col_num]
     public Vector<Vector<Cell>> cells = new Vector();
+
+    // list of valid numbers that can be input, populated in constructor
     public Vector valid_nums = new Vector();
 
+    // constructor
     public Board(int boardSize) {
         this.boardSize = boardSize;
-        int num_cells = this.boardSize * this.boardSize;
+        this.squaresPer = (int)Math.sqrt(this.boardSize);
         for (int i = 0; i < this.boardSize; i++) {
             this.valid_nums.addElement(i + 1);
-            //System.out.println((int)(this.valid_nums.elementAt(i)));
         }
-        //checkBoard(true);
-        this.initializeBoard(boardSize);
+        this.initializeBoard();
     }
 
     // input: checkType ("box", "row", or "col"), x (corresponding number of box/row/col), num (number to check for), update (should remove from potentials?)
@@ -65,7 +70,8 @@ public class Board {
         return total;
     }
 
-    public void initializeBoard(int num_cells) {
+    // creates an empty board (all cells = 0) given the input boardSize
+    public void initializeBoard() {
         for (int i = 0; i < this.boardSize; i++) {
             Vector row = new Vector();
             for (int j = 0; j < this.boardSize; j++) {
@@ -76,6 +82,8 @@ public class Board {
         }
     }
 
+    // called externally, takes in a CSV filepath as a string and sets the board data structure to reflect that input
+    // TODO: need to add error checking
     public void readFromFile(String filename) {
         BufferedReader br = null;
         String line;
@@ -107,6 +115,8 @@ public class Board {
         }
     }
 
+    // checks if a number is valid
+    // pretty useless as of now, will be helpful for error checking the board read in from file and if/when a proper UI is added
     public boolean isValidNum(int num) {
         for (int i = 0; i < this.boardSize; i++) {
             if (num == (int)(this.valid_nums.elementAt(i))) {
@@ -116,50 +126,18 @@ public class Board {
         return false;
     }
 
+    // returns the box index based on the row and column of the cell that calls it
     public int calculateBox(int row, int col) {
-        int boxesPerRow = (int)Math.sqrt(this.boardSize);
-        int boxRow = row / boxesPerRow;
-        int boxCol = col / boxesPerRow;
-        return boxRow * boxesPerRow + boxCol;
+        int boxRow = row / this.squaresPer;
+        int boxCol = col / this.squaresPer;
+        return boxRow * this.squaresPer + boxCol;
     }
 
+    // verifies that the board is valid
+    // TODO: fix the fact that it doesn't work, may be issue with checkNum function also
     public boolean checkBoard(boolean debug) {
-        /*
-        valid_nums = []
-        for i in range(len(board)):
-            valid_nums.append(i+1)
-        if debug:
-            print("valid numbers = ", valid_nums)
-        for i in range(len(board)):
-            row = set()
-            column = set()
-            for j in range(len(board[i])):
-                if board[i][j].num in valid_nums:
-                    row.add(board[i][j])
-                if board[j][i].num in valid_nums:
-                    column.add(board[j][i].num)
-            if debug:
-                print("row=\t", row)
-                print("col=\t", column)
-            if len(row) != len(board) or len(column) != len(board):
-                return False
-        num_squares = len(board)
-        squares_per_row = int(math.sqrt(num_squares))
-        for i in range(0, num_squares, squares_per_row):
-            for j in range(0, num_squares, squares_per_row):
-                current_square = set()
-                for x in range(i, i+squares_per_row):
-                    for y in range(j, j+squares_per_row):
-                        if board[x][y].num in valid_nums:
-                            current_square.add(board[x][y].num)
-                if debug:
-                    print("square=\t", current_square)
-                if len(current_square) != len(board):
-                    return False
-        return True
-         */
-        int i = 0;
-        int j = 0;
+        int i;
+        int j;
         if(debug) {
             System.out.println("valid numbers: " + this.valid_nums.toString());
         }
@@ -177,18 +155,18 @@ public class Board {
     }
 
 
+    // prints out the board in a nice format with separate boxes
+    // TODO: make horizontal box borders dynamic based on board size
     public void printBoard() {
-        int boxesPerRow = (int)Math.sqrt(this.boardSize);
-        System.out.println(boxesPerRow);
         for (int i = 0; i < boardSize; i++) {
             for (int j = 0; j < boardSize; j++) {
                 System.out.printf("%d", this.cells.elementAt(i).elementAt(j).num);
-                if ((j + 1) % boxesPerRow == 0) {
+                if ((j + 1) % this.squaresPer == 0) {
                     System.out.printf(" | ");
                 }
             }
             System.out.println();
-            if ((i + 1) % boxesPerRow == 0) {
+            if ((i + 1) % this.squaresPer == 0) {
                 System.out.printf("------------------------------------------\n");
             }
         }

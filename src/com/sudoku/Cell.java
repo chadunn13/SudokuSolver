@@ -10,7 +10,7 @@ public class Cell {
     public Vector potentials;
     Board board;
 
-    //constructor for known cell
+    //constructor
     public Cell(int box, int row, int col, int num, int boardSize, Board board) {
         this.row = row;
         this.col = col;
@@ -19,15 +19,10 @@ public class Cell {
         this.board = board;
         this.box = box;
         this.potentials = new Vector();
-        //this.valid_nums = []
-        //for i in range(max_num):
-        //this.valid_nums.append(i + 1)
     }
 
-    public int getNum() {
-        return this.num;
-    }
-
+    // set cell number to input
+    // prevents already solved cells from being overwritten
     public void setNum(int num) {
         if(this.num < 0) {
             System.out.println("ERROR, number already set to " + this.num);
@@ -38,6 +33,9 @@ public class Cell {
 
     }
 
+    // check the cell's box/row/col to ensure that its num is the only one to fit
+    // TODO: add num as argument to allow checking of potentials
+    // TODO: also change checking method from >1 to something more robust
     public boolean checkCell(boolean debug) {
         if (this.num == 0) {
             if (debug) {
