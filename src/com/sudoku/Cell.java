@@ -23,19 +23,22 @@ public class Cell {
 
     // set cell number to input
     // prevents already solved cells from being overwritten
-    public void setNum(int num) {
+    // also updates potentials of other box/row/col cells
+    public void setNum(int num, boolean update, boolean debug) {
         if(this.num < 0) {
             System.out.println("ERROR, number already set to " + this.num);
         }
         else {
             this.num = num;
-        }
+            this.potentials.clear();
+            this.board.checkNum("box", this.box, num, update, debug);
+            this.board.checkNum("row", this.row, num, update, debug);
+            this.board.checkNum("col", this.col, num, update, debug);
 
+        }
     }
 
     // check the cell's box/row/col to ensure that its num is the only one to fit
-    // TODO: add num as argument to allow checking of potentials
-    // TODO: also change checking method from >1 to something more robust
     public boolean checkCell(boolean debug) {
         if (this.num == 0) {
             if (debug) {
@@ -62,5 +65,18 @@ public class Cell {
             return false;
         }
         return true;
+    }
+
+    //
+    public boolean addPotential(int num, boolean debug) {
+        if (this.board.checkNum("box", this.box, num, false, debug) == 0) {
+            if (this.board.checkNum("row", this.row, num, false, debug) == 0) {
+                if (this.board.checkNum("col", this.col, num, false, debug) == 0) {
+                    this.potentials.add(num);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

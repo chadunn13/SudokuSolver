@@ -27,55 +27,87 @@ public class Board {
         this.initializeBoard();
     }
 
+    public boolean startSolver(boolean debug) {
+        this.addInitialPotentials(debug);
+
+        int i;
+        int j;
+        int k;
+
+        while (!this.checkBoard(debug)) {
+            boolean updated = false;
+            for (i = 0; i < this.boardSize; i++) {
+                for (j = 0; j < this.boardSize; j++) {
+                    if (this.cells.elementAt(i).elementAt(j).num == 0) {
+                        // check if potential count == 1, if so only possible solution so set it
+                        if (this.cells.elementAt(i).elementAt(j).potentials.size() == 1) {
+                            this.cells.elementAt(i).elementAt(j).setNum((int)this.cells.elementAt(i).elementAt(j).potentials.firstElement(), true, debug);
+                            updated = true;
+                        }
+
+
+
+
+                    }
+                }
+            }
+            if (!updated) {
+                System.out.println("cannot update any more");
+                return this.checkBoard(debug);
+            }
+        }
+        return true;
+    }
+
     // input: checkType ("box", "row", or "col"), x (corresponding number of box/row/col), num (number to check for), update (should remove from potentials?)
     // output: number of instances of num found
     public int checkNum(String checkType, int x, int num, boolean update, boolean debug) {
         int i;
         int j;
         int total = 0;
-        for (i = 0; i < cells.size(); i++) {
-            for (j = 0; j < cells.elementAt(i).size(); j++) {
+        for (i = 0; i < this.cells.size(); i++) {
+            for (j = 0; j < this.cells.elementAt(i).size(); j++) {
                 if (checkType == "box") {
-                    if (cells.elementAt(i).elementAt(j).box == x) {
+                    if (this.cells.elementAt(i).elementAt(j).box == x) {
                         if (debug) {
                             System.out.printf("%s %d %d, %d %d, %d\n", checkType, x, num, i, j, total);
                         }
-                        if (cells.elementAt(i).elementAt(j).num == num) {
+                        if (this.cells.elementAt(i).elementAt(j).num == num) {
                             total++;
                         }
                         if (update) {
-                            if (cells.elementAt(i).elementAt(j).potentials.contains(num)) {
-                                cells.elementAt(i).elementAt(j).potentials.remove(num);
+                            if (this.cells.elementAt(i).elementAt(j).potentials.contains(num)) {
+                                this.cells.elementAt(i).elementAt(j).potentials.removeElement(num);
                             }
                         }
                     }
                 }
                 if (checkType == "row") {
-                    if (cells.elementAt(i).elementAt(j).row == x) {
-                        if (debug) {
-                            System.out.printf("%s %d %d, %d %d, %d\n", checkType, x, num, i, j, total);
-                        }
-                        if (cells.elementAt(i).elementAt(j).num == num) {
+                    if (this.cells.elementAt(i).elementAt(j).row == x) {
+                        if (this.cells.elementAt(i).elementAt(j).num == num) {
+                            if (debug) {
+                                System.out.printf("%s %d %d, %d %d, %d\n", checkType, x, num, i, j, total);
+                            }
                             total++;
                         }
                         if (update) {
-                            if (cells.elementAt(i).elementAt(j).potentials.contains(num)) {
-                                cells.elementAt(i).elementAt(j).potentials.remove(num);
+                            if (this.cells.elementAt(i).elementAt(j).potentials.contains(num)) {
+                                this.cells.elementAt(i).elementAt(j).potentials.removeElement(num);
                             }
                         }
                     }
                 }
                 if (checkType == "col") {
-                    if (cells.elementAt(i).elementAt(j).col == x) {
+                    if (this.cells.elementAt(i).elementAt(j).col == x) {
                         if (debug) {
                             System.out.printf("%s %d %d, %d %d, %d\n", checkType, x, num, i, j, total);
                         }
-                        if (cells.elementAt(i).elementAt(j).num == num) {
+                        if (this.cells.elementAt(i).elementAt(j).num == num) {
                             total++;
                         }
                         if (update) {
-                            if (cells.elementAt(i).elementAt(j).potentials.contains(num)) {
-                                cells.elementAt(i).elementAt(j).potentials.remove(num);
+                            if (this.cells.elementAt(i).elementAt(j).potentials.contains(num)) {
+                                this.cells.elementAt(i).elementAt(j).potentials.removeElement(num);
                             }
                         }
                     }
@@ -100,7 +132,7 @@ public class Board {
 
     // called externally, takes in a CSV filepath as a string and sets the board data structure to reflect that input
     // TODO: need to add error checking
-    public void readFromFile(String filename) {
+    public void readFromFile(String filename, boolean debug) {
         BufferedReader br = null;
         String line;
         String cvsSplitBy = ",";
@@ -111,7 +143,12 @@ public class Board {
                 // use comma as separator
                 String[] col = line.split(cvsSplitBy);
                 for (int i = 0; i < col.length; i++) {
-                    this.cells.elementAt(row).elementAt(i).setNum(Integer.parseInt(col[i]));
+                    if (isValidNum(Integer.parseInt(col[i]))) {
+                        this.cells.elementAt(row).elementAt(i).setNum(Integer.parseInt(col[i]), false, debug);
+                    }
+                    else {
+                        this.cells.elementAt(row).elementAt(i).setNum(0, false, debug);
+                    }
                 }
                 row++;
             }
@@ -126,6 +163,25 @@ public class Board {
                     br.close();
                 } catch (IOException e) {
                     e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    // adds potentials for all unsolved cells at start of runtime
+    public void addInitialPotentials(boolean debug) {
+        int i;
+        int j;
+        for (i = 0; i < this.boardSize; i++) {
+            for (j = 0; j < this.boardSize; j++) {
+                if (this.cells.elementAt(i).elementAt(j).num == 0) {
+                    for (int k = 1; k <= this.boardSize; k++) {
+                        if (this.cells.elementAt(i).elementAt(j).addPotential(k, false)) {
+                            if (debug) {
+                                System.out.println("added " + k + " to " + i + "," + j);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -150,7 +206,6 @@ public class Board {
     }
 
     // verifies that the board is valid
-    // TODO: fix the fact that it doesn't work, may be issue with checkNum function also
     public boolean checkBoard(boolean debug) {
         int i;
         int j;
@@ -169,6 +224,9 @@ public class Board {
                         return validBoard;
                     }
                 }
+                if (this.cells.elementAt(i).elementAt(j).num == 0) {
+                    validBoard = false;
+                }
             }
         }
         return validBoard;
@@ -176,7 +234,6 @@ public class Board {
 
 
     // prints out the board in a nice format with separate boxes
-    // TODO: make horizontal box borders dynamic based on board size
     public void printBoard() {
         String temp = new String(new char[boardSize * 2 + squaresPer * 2 + 1]).replace("\0", "-");
         System.out.printf("%s\n", temp);
