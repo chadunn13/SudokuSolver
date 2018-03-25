@@ -9,7 +9,7 @@ A Java program to read in unsolved Sudoku puzzles of any square board size (i.e.
 Reads in unsolved boards (or solved, with the ability to check for validity) as CSV files and prints out the completed board.  Unsolved cells should be initially set to 0
 
 Basic algorithm adds the "potential" numbers to every non-solved cell at the beginning of the runtime, then continues iterating through the board to check for any of the following conditions to satisfy a solution to each cell:
-  - If it is the only potential for that cell, it must be the only solution
+  - (done) If it is the only potential for that cell, it must be the only solution
   - If a cell has a number as a potential that is the only of its kind in that particular row/column/box, it must be the solution
   - If a number in a box can only fit into one column/row, the cells in other boxes in that corresponding row/column are updated to remove that number as a potential
 
