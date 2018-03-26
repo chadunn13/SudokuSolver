@@ -14,8 +14,8 @@ public class Main {
         long startTime = System.nanoTime();
         boolean debug = false;
 
-        Board board = new Board(9);
-        board.readFromFile("inputs/9_extreme1.csv", debug);
+        Board board = new Board(16);
+        board.readFromFile("inputs/16_extreme.csv", debug);
 
         System.out.println("Starting Board:");
         board.printBoard();

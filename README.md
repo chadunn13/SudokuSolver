@@ -13,6 +13,6 @@ Once a cell is solved, the "potentials" of each other cell in that row, column, 
 
 Future plans:
   - better UI
-  - optimizing the solving algorithm (although runtime for an "extreme" puzzle is less than 0.1 seconds)
+  - optimizing the solving algorithm (although runtime for an "extreme" 9x9 puzzle is less than 0.1 seconds)
   - extension to non-square even board sizes (8, 10, 12, etc)
   

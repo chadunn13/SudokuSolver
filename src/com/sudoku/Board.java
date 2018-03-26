@@ -15,14 +15,16 @@ public class Board {
     public Vector<Vector<Cell>> cells = new Vector();
 
     // list of valid numbers that can be input, populated in constructor
-    public Vector valid_nums = new Vector();
+    public Vector validNums = new Vector();
+    public Vector boxChecks = new Vector();
 
     // constructor
     public Board(int boardSize) {
         this.boardSize = boardSize;
         this.squaresPer = (int)Math.sqrt(this.boardSize);
         for (int i = 0; i < this.boardSize; i++) {
-            this.valid_nums.addElement(i + 1);
+            this.validNums.addElement(i + 1);
+            this.boxChecks.addElement(0);
         }
         this.initializeBoard();
     }
@@ -57,17 +59,26 @@ public class Board {
                     }
                 }
             }
+            if (updated) {
+                for (i = 0; i < this.boardSize; i++) {
+                    this.boxChecks.set(i, 0);
+                }
+            }
             for (i = 0; i < this.boardSize; i++) {
-                for (k = 0; k < this.boardSize; k++) {
-                    int numIndexes = this.checkBoxSingleRowCol("row", i, k, debug);
-                    if (numIndexes != -1) {
-                        this.updateOtherBoxes("row", i, numIndexes, k, debug);
-                        updated = true;
-                    }
-                    numIndexes = this.checkBoxSingleRowCol("col", i, k, debug);
-                    if (numIndexes != -1) {
-                        this.updateOtherBoxes("col", i, numIndexes, k, debug);
-                        updated = true;
+                if ((int)this.boxChecks.elementAt(i) == 0) {
+                    for (k = 0; k < this.boardSize; k++) {
+                        int numIndexes = this.checkBoxSingleRowCol("row", i, k, debug);
+                        if (numIndexes != -1) {
+                            this.updateOtherBoxes("row", i, numIndexes, k, debug);
+                            updated = true;
+                            this.boxChecks.set(i, 1);
+                        }
+                        numIndexes = this.checkBoxSingleRowCol("col", i, k, debug);
+                        if (numIndexes != -1) {
+                            this.updateOtherBoxes("col", i, numIndexes, k, debug);
+                            updated = true;
+                            this.boxChecks.set(i, 1);
+                        }
                     }
                 }
             }
@@ -276,7 +287,6 @@ public class Board {
     }
 
     // called externally, takes in a CSV filepath as a string and sets the board data structure to reflect that input
-    // TODO: need to add error checking
     public void readFromFile(String filename, boolean debug) {
         BufferedReader br = null;
         String line;
@@ -287,12 +297,20 @@ public class Board {
             while ((line = br.readLine()) != null) {
                 // use comma as separator
                 String[] col = line.split(cvsSplitBy);
+                if (col.length != boardSize) {
+                    System.out.println("ERROR: Incorrectly sized input file at line " + (row+1));
+                    System.exit(1);
+                }
                 for (int i = 0; i < col.length; i++) {
                     if (isValidNum(Integer.parseInt(col[i]))) {
                         this.cells.elementAt(row).elementAt(i).setNum(Integer.parseInt(col[i]), false, debug);
                     }
-                    else {
+                    else if (Integer.parseInt(col[i]) == 0){
                         this.cells.elementAt(row).elementAt(i).setNum(0, false, debug);
+                    }
+                    else {
+                        System.out.println("Number not valid for this size board at line " + (row+1) + ", column " + (i+1));
+                        System.exit(1);
                     }
                 }
                 row++;
@@ -336,7 +354,7 @@ public class Board {
     // pretty useless as of now, will be helpful for error checking the board read in from file and if/when a proper UI is added
     public boolean isValidNum(int num) {
         for (int i = 0; i < this.boardSize; i++) {
-            if (num == (int)(this.valid_nums.elementAt(i))) {
+            if (num == (int)(this.validNums.elementAt(i))) {
                 return true;
             }
         }
@@ -355,7 +373,7 @@ public class Board {
         int i;
         int j;
         if (debug) {
-            System.out.println("valid numbers: " + this.valid_nums.toString());
+            System.out.println("valid numbers: " + this.validNums.toString());
         }
 
         boolean validBoard = true;
@@ -380,19 +398,38 @@ public class Board {
 
     // prints out the board in a nice format with separate boxes
     public void printBoard() {
-        String temp = new String(new char[boardSize * 2 + squaresPer * 2 + 1]).replace("\0", "-");
-        System.out.printf("%s\n", temp);
-        for (int i = 0; i < boardSize; i++) {
-            System.out.printf("| ");
-            for (int j = 0; j < boardSize; j++) {
-                System.out.printf("%d ", this.cells.elementAt(i).elementAt(j).num);
-                if ((j + 1) % this.squaresPer == 0 && (j + 1) != this.boardSize) {
-                    System.out.printf("| ");
+        if (this.boardSize < 10) {
+            String temp = new String(new char[boardSize * 2 + squaresPer * 2 + 1]).replace("\0", "-");
+            System.out.printf("%s\n", temp);
+            for (int i = 0; i < boardSize; i++) {
+                System.out.printf("| ");
+                for (int j = 0; j < boardSize; j++) {
+                    System.out.printf("%d ", this.cells.elementAt(i).elementAt(j).num);
+                    if ((j + 1) % this.squaresPer == 0 && (j + 1) != this.boardSize) {
+                        System.out.printf("| ");
+                    }
+                }
+                System.out.println("|");
+                if ((i + 1) % this.squaresPer == 0) {
+                    System.out.printf("%s\n", temp);
                 }
             }
-            System.out.println("|");
-            if ((i + 1) % this.squaresPer == 0) {
-                System.out.printf("%s\n", temp);
+        }
+        else {
+            String temp = new String(new char[boardSize * 3 + squaresPer * 2 + 1]).replace("\0", "-");
+            System.out.printf("%s\n", temp);
+            for (int i = 0; i < boardSize; i++) {
+                System.out.printf("| ");
+                for (int j = 0; j < boardSize; j++) {
+                    System.out.printf("%02d ", this.cells.elementAt(i).elementAt(j).num);
+                    if ((j + 1) % this.squaresPer == 0 && (j + 1) != this.boardSize) {
+                        System.out.printf("| ");
+                    }
+                }
+                System.out.println("|");
+                if ((i + 1) % this.squaresPer == 0) {
+                    System.out.printf("%s\n", temp);
+                }
             }
         }
     }
