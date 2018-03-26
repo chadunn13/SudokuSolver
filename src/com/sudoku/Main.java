@@ -11,23 +11,22 @@ public class Main {
     }
 
     public static void test() {
-        //Board board1 = new Board(9, 9);
-        //test(board1);
+        long startTime = System.nanoTime();
         boolean debug = false;
+
         Board board = new Board(9);
-        //board2.printBoard();
-        board.readFromFile("inputs/9_easy.csv", debug);
+        board.readFromFile("inputs/9_extreme1.csv", debug);
+
         System.out.println("Starting Board:");
         board.printBoard();
+
         board.startSolver(debug);
-        //board.printBoard();
-        // purposefully create an invalid board
-        //board.cells.elementAt(0).elementAt(0).setNum(3);
+
         System.out.println("Finished Board:");
         board.printBoard();
-        //System.out.println(board.checkBoard(debug));
 
-
+        long endTime   = System.nanoTime();
+        long totalTime = endTime - startTime;
+        System.out.println("Total running time: " + totalTime / 1_000_000_000.0 + " seconds");
     }
-
 }

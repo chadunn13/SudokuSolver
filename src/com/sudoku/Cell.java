@@ -67,6 +67,31 @@ public class Cell {
         return true;
     }
 
+    public boolean checkCellPotentials(int num, boolean debug) {
+        if (!this.potentials.contains(num)) {
+            return false;
+        }
+        if (this.board.checkPotentials("box", this.box, num, debug) == 1) {
+            if (debug) {
+                System.out.println("single " + num + " in box");
+            }
+            return true;
+        }
+        if (this.board.checkPotentials("row", this.row, num, debug) == 1) {
+            if (debug) {
+                System.out.println("single " + num + " in row");
+            }
+            return true;
+        }
+        if (this.board.checkPotentials("col", this.col, num, debug) == 1) {
+            if (debug) {
+                System.out.println("single " + num + " in col");
+            }
+            return true;
+        }
+        return false;
+    }
+
     //
     public boolean addPotential(int num, boolean debug) {
         if (this.board.checkNum("box", this.box, num, false, debug) == 0) {

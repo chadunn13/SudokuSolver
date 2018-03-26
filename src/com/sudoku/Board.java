@@ -34,7 +34,7 @@ public class Board {
         int j;
         int k;
 
-        while (!this.checkBoard(debug)) {
+        while (!this.checkBoard(false)) {
             boolean updated = false;
             for (i = 0; i < this.boardSize; i++) {
                 for (j = 0; j < this.boardSize; j++) {
@@ -43,20 +43,119 @@ public class Board {
                         if (this.cells.elementAt(i).elementAt(j).potentials.size() == 1) {
                             this.cells.elementAt(i).elementAt(j).setNum((int)this.cells.elementAt(i).elementAt(j).potentials.firstElement(), true, debug);
                             updated = true;
+                            continue;
                         }
-
-
-
-
+                        // check if only potential of its kind in its row/box/col
+                        for (k = 0; k < this.cells.elementAt(i).elementAt(j).potentials.size(); k++) {
+                            int num = (int)this.cells.elementAt(i).elementAt(j).potentials.elementAt(k);
+                            if (this.cells.elementAt(i).elementAt(j).checkCellPotentials(num, debug)) {
+                                this.cells.elementAt(i).elementAt(j).setNum(num, true, debug);
+                                updated = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            for (i = 0; i < this.boardSize; i++) {
+                for (k = 0; k < this.boardSize; k++) {
+                    int numIndexes = this.checkBoxSingleRowCol("row", i, k, debug);
+                    if (numIndexes != -1) {
+                        this.updateOtherBoxes("row", i, numIndexes, k, debug);
+                        updated = true;
+                    }
+                    numIndexes = this.checkBoxSingleRowCol("col", i, k, debug);
+                    if (numIndexes != -1) {
+                        this.updateOtherBoxes("col", i, numIndexes, k, debug);
+                        updated = true;
                     }
                 }
             }
             if (!updated) {
                 System.out.println("cannot update any more");
-                return this.checkBoard(debug);
+                return this.checkBoard(false);
             }
         }
         return true;
+    }
+
+    public int checkBoxSingleRowCol(String checkType, int box, int num, boolean debug) {
+        int i;
+        int j;
+        int total = 0;
+        int index = -1;
+        for (i = 0; i < this.boardSize; i++) {
+            for (j = 0; j < this.boardSize; j++) {
+                if (this.cells.elementAt(i).elementAt(j).box == box) {
+                    if (this.cells.elementAt(i).elementAt(j).potentials.contains(num)) {
+                        //total++;
+                        if (checkType == "row") {
+                            if (total == 0) {
+                                total++;
+                                index = this.cells.elementAt(i).elementAt(j).row;
+                            }
+                            if (total == 1) {
+                                if (this.cells.elementAt(i).elementAt(j).row == index) {
+                                    continue;
+                                }
+                                else {
+                                    return -1;
+                                }
+                            }
+                        }
+                        if (checkType == "col") {
+                            if (total == 0) {
+                                total++;
+                                index = this.cells.elementAt(i).elementAt(j).col;
+                            }
+                            if (total == 1) {
+                                if (this.cells.elementAt(i).elementAt(j).col == index) {
+                                    continue;
+                                }
+                                else {
+                                    return -1;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (total == 1) {
+            return index;
+        }
+        else {
+            return -1;
+        }
+    }
+
+    public void updateOtherBoxes(String checkType, int currentBox, int index, int num, boolean debug) {
+        int i;
+        int j;
+        for (i = 0; i < this.cells.size(); i++) {
+            for (j = 0; j < this.cells.elementAt(i).size(); j++) {
+                if (this.cells.elementAt(i).elementAt(j).box == currentBox) {
+                    continue;
+                }
+                if (checkType == "row") {
+                    if (this.cells.elementAt(i).elementAt(j).row == index) {
+                        if (this.cells.elementAt(i).elementAt(j).potentials.contains(num)) {
+                            this.cells.elementAt(i).elementAt(j).potentials.removeElement(num);
+                        }
+                    }
+
+                }
+                if (checkType == "col") {
+                    if (this.cells.elementAt(i).elementAt(j).col == index) {
+                        if (this.cells.elementAt(i).elementAt(j).potentials.contains(num)) {
+                            this.cells.elementAt(i).elementAt(j).potentials.removeElement(num);
+                        }
+                    }
+
+                }
+
+            }
+        }
     }
 
     // input: checkType ("box", "row", or "col"), x (corresponding number of box/row/col), num (number to check for), update (should remove from potentials?)
@@ -88,7 +187,9 @@ public class Board {
                             if (debug) {
                                 System.out.printf("%s %d %d, %d %d, %d\n", checkType, x, num, i, j, total);
                             }
-                            total++;
+                            if (this.cells.elementAt(i).elementAt(j).num == num) {
+                                total++;
+                            }
                         }
                         if (update) {
                             if (this.cells.elementAt(i).elementAt(j).potentials.contains(num)) {
@@ -109,6 +210,50 @@ public class Board {
                             if (this.cells.elementAt(i).elementAt(j).potentials.contains(num)) {
                                 this.cells.elementAt(i).elementAt(j).potentials.removeElement(num);
                             }
+                        }
+                    }
+                }
+            }
+        }
+
+        return total;
+    }
+
+    public int checkPotentials(String checkType, int x, int num, boolean debug) {
+        int i;
+        int j;
+        int total = 0;
+        for (i = 0; i < this.cells.size(); i++) {
+            for (j = 0; j < this.cells.elementAt(i).size(); j++) {
+                if (checkType == "box") {
+                    if (this.cells.elementAt(i).elementAt(j).box == x) {
+                        if (debug) {
+                            System.out.printf("%s %d %d, %d %d, %d\n", checkType, x, num, i, j, total);
+                        }
+                        if (this.cells.elementAt(i).elementAt(j).potentials.contains(num)) {
+                            total++;
+                        }
+                    }
+                }
+                if (checkType == "row") {
+                    if (this.cells.elementAt(i).elementAt(j).row == x) {
+                        if (this.cells.elementAt(i).elementAt(j).num == num) {
+                            if (debug) {
+                                System.out.printf("%s %d %d, %d %d, %d\n", checkType, x, num, i, j, total);
+                            }
+                            if (this.cells.elementAt(i).elementAt(j).potentials.contains(num)) {
+                                total++;
+                            }
+                        }
+                    }
+                }
+                if (checkType == "col") {
+                    if (this.cells.elementAt(i).elementAt(j).col == x) {
+                        if (debug) {
+                            System.out.printf("%s %d %d, %d %d, %d\n", checkType, x, num, i, j, total);
+                        }
+                        if (this.cells.elementAt(i).elementAt(j).potentials.contains(num)) {
+                            total++;
                         }
                     }
                 }
