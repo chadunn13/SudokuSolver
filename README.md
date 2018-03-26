@@ -1,6 +1,6 @@
 # SudokuSolver
 
-A Java program to read in unsolved Sudoku puzzles of any square board size (i.e. 4, 9, 16...) and solve it using brute-force techniques.
+A Java program to read in unsolved Sudoku puzzles of any square board size (i.e. 4, 9, 16...) and solve it using techniques similar to how a human would logically solve one rather than brute-force recursion.
 
 Reads in unsolved boards (or solved, with the ability to check for validity) as CSV files and prints out the completed board.  Unsolved cells should be initially set to 0 in the CSV.
 
