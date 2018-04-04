@@ -12,7 +12,7 @@ public class Board {
     private int squaresPer;
 
     // vector of row vectors, called with cells[row_num][col_num]
-    public Vector<Vector<Cell>> cells = new Vector();
+    public Vector<Vector<Cell>> cells = new Vector<>();
 
     // list of valid numbers that can be input, populated in constructor
     public Vector validNums = new Vector();
@@ -90,7 +90,7 @@ public class Board {
         return true;
     }
 
-    public int checkBoxSingleRowCol(String checkType, int box, int num, boolean debug) {
+    private int checkBoxSingleRowCol(String checkType, int box, int num, boolean debug) {
         int i;
         int j;
         int total = 0;
@@ -140,7 +140,7 @@ public class Board {
         }
     }
 
-    public void updateOtherBoxes(String checkType, int currentBox, int index, int num, boolean debug) {
+    private void updateOtherBoxes(String checkType, int currentBox, int index, int num, boolean debug) {
         int i;
         int j;
         for (i = 0; i < this.cells.size(); i++) {
@@ -275,9 +275,9 @@ public class Board {
     }
 
     // creates an empty board (all cells = 0) given the input boardSize
-    public void initializeBoard() {
+    private void initializeBoard() {
         for (int i = 0; i < this.boardSize; i++) {
-            Vector row = new Vector();
+            Vector<Cell> row = new Vector();
             for (int j = 0; j < this.boardSize; j++) {
                 int box = this.calculateBox(i, j);
                 row.addElement(new Cell(box, i, j, 0, this.boardSize, this));
@@ -332,7 +332,7 @@ public class Board {
     }
 
     // adds potentials for all unsolved cells at start of runtime
-    public void addInitialPotentials(boolean debug) {
+    private void addInitialPotentials(boolean debug) {
         int i;
         int j;
         for (i = 0; i < this.boardSize; i++) {
@@ -352,7 +352,7 @@ public class Board {
 
     // checks if a number is valid
     // pretty useless as of now, will be helpful for error checking the board read in from file and if/when a proper UI is added
-    public boolean isValidNum(int num) {
+    private boolean isValidNum(int num) {
         for (int i = 0; i < this.boardSize; i++) {
             if (num == (int)(this.validNums.elementAt(i))) {
                 return true;
@@ -362,14 +362,14 @@ public class Board {
     }
 
     // returns the box index based on the row and column of the cell that calls it
-    public int calculateBox(int row, int col) {
+    private int calculateBox(int row, int col) {
         int boxRow = row / this.squaresPer;
         int boxCol = col / this.squaresPer;
         return boxRow * this.squaresPer + boxCol;
     }
 
     // verifies that the board is valid
-    public boolean checkBoard(boolean debug) {
+    private boolean checkBoard(boolean debug) {
         int i;
         int j;
         if (debug) {
@@ -383,8 +383,8 @@ public class Board {
                 if (!this.cells.elementAt(i).elementAt(j).checkCell(debug)) {
                     validBoard = false;
                     // if error found and no need to print out every cell check, immediately return false
-                    if (!debug && !validBoard) {
-                        return validBoard;
+                    if (!debug) {
+                        return false;
                     }
                 }
                 if (this.cells.elementAt(i).elementAt(j).num == 0) {
@@ -402,11 +402,11 @@ public class Board {
             String temp = new String(new char[boardSize * 2 + squaresPer * 2 + 1]).replace("\0", "-");
             System.out.printf("%s\n", temp);
             for (int i = 0; i < boardSize; i++) {
-                System.out.printf("| ");
+                System.out.print("| ");
                 for (int j = 0; j < boardSize; j++) {
                     System.out.printf("%d ", this.cells.elementAt(i).elementAt(j).num);
                     if ((j + 1) % this.squaresPer == 0 && (j + 1) != this.boardSize) {
-                        System.out.printf("| ");
+                        System.out.print("| ");
                     }
                 }
                 System.out.println("|");
@@ -419,11 +419,11 @@ public class Board {
             String temp = new String(new char[boardSize * 3 + squaresPer * 2 + 1]).replace("\0", "-");
             System.out.printf("%s\n", temp);
             for (int i = 0; i < boardSize; i++) {
-                System.out.printf("| ");
+                System.out.print("| ");
                 for (int j = 0; j < boardSize; j++) {
                     System.out.printf("%02d ", this.cells.elementAt(i).elementAt(j).num);
                     if ((j + 1) % this.squaresPer == 0 && (j + 1) != this.boardSize) {
-                        System.out.printf("| ");
+                        System.out.print("| ");
                     }
                 }
                 System.out.println("|");
@@ -433,7 +433,4 @@ public class Board {
             }
         }
     }
-
-
-
 }
